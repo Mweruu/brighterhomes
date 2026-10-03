@@ -32,40 +32,45 @@ export const Route = createFileRoute("/")({
 });
 
 
-const serviceIcons = [Home, Shirt, Sparkles, Sofa, BedDouble, Hammer];
-
 const services = [
   {
+    icon: Home,
     title: "Move-in deep cleaning",
     description:
       "Every corner scrubbed, degreased and disinfected before you unpack — kitchen, bathrooms, floors, windows and inside cabinets.",
   },
   {
+    icon: Shirt,
     title: "Heavy textile cleaning",
     description:
       "Curtains, drapes, throws and rugs handled with the right method for each fabric, on-site or collected and returned pressed.",
   },
   {
+    icon: Sparkles,
     title: "Carpet & rug cleaning",
     description:
       "Deep hot-water extraction that lifts dust, stains and odours from wall-to-wall carpets and loose rugs, wool included.",
   },
   {
+    icon: Sofa,
     title: "Upholstery & sofa cleaning",
     description:
       "Fabric and leather sofas, dining chairs and ottomans gently deep-cleaned, deodorised and left quick-drying.",
   },
   {
+    icon: BedDouble,
     title: "Mattress & curtain cleaning",
     description:
       "Steam sanitising for mattresses and on-site curtain cleaning — no need to take them down in most cases.",
   },
   {
+    icon: Hammer,
     title: "Post-renovation & move-out",
     description:
       "Dust, paint specks and cement haze removed after builders leave — or hand your old home back spotless.",
   },
 ];
+
 
 const steps = [
   {
@@ -170,17 +175,16 @@ function Index() {
           </Link>
         </div>
         <div className="mt-9 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service, i) => {
-            const Icon = serviceIcons[i % serviceIcons.length];
-            return (
+          {services.map((service) => (
               <Link
                 key={service.title}
                 to="/booking"
                 className="group rounded-3xl border border-border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg"
               >
                 <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="h-5 w-5" />
+                  <service.icon className="h-5 w-5" />
                 </span>
+
                 <h3 className="mt-4 font-display text-xl font-semibold">{service.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
               </Link>
