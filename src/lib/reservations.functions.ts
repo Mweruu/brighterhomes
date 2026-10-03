@@ -5,13 +5,14 @@ import { PROPERTY_SIZES, SERVICE_TYPES, TIME_SLOTS } from "./site";
 export interface ReservationInput {
   name: string;
   phone: string;
-  email?: string;
+  email?: string | undefined;
   serviceType: string;
   propertySize: string;
   preferredDate: string;
   preferredTime: string;
-  notes?: string;
+  notes?: string | undefined;
 }
+
 
 function str(value: unknown, max: number): string {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
@@ -21,14 +22,15 @@ function str(value: unknown, max: number): string {
 // database. Throws a plain Error with a user-readable message on bad input.
 function validateReservation(raw: unknown): ReservationInput {
   const input = (raw ?? {}) as Record<string, unknown>;
-  const name = str(input.name, 100);
-  const phone = str(input.phone, 30);
-  const email = str(input.email, 255);
-  const serviceType = str(input.serviceType, 100);
-  const propertySize = str(input.propertySize, 100);
-  const preferredDate = str(input.preferredDate, 10);
-  const preferredTime = str(input.preferredTime, 50);
-  const notes = str(input.notes, 1000);
+  const name = str(input["name"], 100);
+  const phone = str(input["phone"], 30);
+  const email = str(input["email"], 255);
+  const serviceType = str(input["serviceType"], 100);
+  const propertySize = str(input["propertySize"], 100);
+  const preferredDate = str(input["preferredDate"], 10);
+  const preferredTime = str(input["preferredTime"], 50);
+  const notes = str(input["notes"], 1000);
+
 
   if (name.length < 2) throw new Error("Please enter your name.");
   if (phone.length < 7) throw new Error("Please enter a valid phone number.");

@@ -29,7 +29,8 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Index,
-);
+});
+
 
 const serviceIcons = [Home, Shirt, Sparkles, Sofa, BedDouble, Hammer];
 
