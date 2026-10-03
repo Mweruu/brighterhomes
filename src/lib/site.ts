@@ -15,3 +15,29 @@ export const BUSINESS = {
 export function whatsappLink(message: string): string {
   return `https://wa.me/${BUSINESS.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
+
+export const SERVICE_TYPES = [
+  "Move-in deep cleaning",
+  "Heavy textile cleaning",
+  "Carpet & rug cleaning",
+  "Upholstery & sofa cleaning",
+  "Mattress & curtain cleaning",
+  "Post-renovation / move-out cleaning",
+  "Something else",
+] as const;
+
+export const PROPERTY_SIZES = [
+  "Single items (sofa, carpets…)",
+  "Studio",
+  "1 bedroom",
+  "2 bedrooms",
+  "3 bedrooms",
+  "4+ bedrooms",
+  "Office / commercial space",
+] as const;
+
+export const TIME_SLOTS = [
+  "Morning (8 AM – 12 PM)",
+  "Afternoon (12 PM – 4 PM)",
+  "Late afternoon (4 PM – 7 PM)",
+] as const;
