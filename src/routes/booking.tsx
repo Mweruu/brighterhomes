@@ -51,7 +51,7 @@ function BookingPage() {
       await submitReservation({ data: { ...form, email: form.email || undefined, notes: form.notes || undefined } });
       setConfirmed(form);
       setStatus("success");
-messaging_placeholder      } catch (err) {
+    } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setStatus("idle");
     }
