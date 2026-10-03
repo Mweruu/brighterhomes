@@ -188,8 +188,8 @@ function Index() {
                 <h3 className="mt-4 font-display text-xl font-semibold">{service.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{service.description}</p>
               </Link>
-            );
-          })}
+          ))}
+
         </div>
       </section>
 
