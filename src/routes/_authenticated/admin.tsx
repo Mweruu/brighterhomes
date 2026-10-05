@@ -1,9 +1,89 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Phone, MessageCircle, Mail, LogOut } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Phone, MessageCircle, Mail, LogOut, Sparkles, Copy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { BUSINESS } from "@/lib/site";
+import { draftSchedulingMessage } from "@/lib/scheduling-ai.functions";
+
+function DraftPanel({ id, phone, email, name }: { id: string; phone: string; email: string | null; name: string }) {
+  const draftFn = useServerFn(draftSchedulingMessage);
+  const [open, setOpen] = useState(false);
+  const [availability, setAvailability] = useState("");
+  const [extra, setExtra] = useState("");
+  const [channel, setChannel] = useState<"whatsapp" | "email">("whatsapp");
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  async function generate() {
+    setBusy(true);
+    setErr(null);
+    try {
+      const res = await draftFn({ data: { reservationId: id, availability, channel, extra } });
+      if ("error" in res && res.error) setErr(res.error);
+      else if ("message" in res && res.message) setDraft(res.message);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Something went wrong.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!open)
+    return (
+      <button onClick={() => setOpen(true)} className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+        <Sparkles className="h-4 w-4" /> Draft scheduling message with AI
+      </button>
+    );
+
+  const subjectMatch = draft.match(/^Subject:\s*(.+)\n+/i);
+  const emailSubject = subjectMatch?.[1] ?? `Your ${BUSINESS.shortName} booking`;
+  const emailBody = subjectMatch ? draft.slice(subjectMatch[0].length) : draft;
+
+  return (
+    <div className="mt-4 space-y-3 rounded-xl border border-border bg-background p-4">
+      <p className="flex items-center gap-1.5 text-sm font-semibold"><Sparkles className="h-4 w-4 text-primary" /> AI scheduling message for {name}</p>
+      <textarea value={availability} onChange={(e) => setAvailability(e.target.value)} rows={3}
+        placeholder={"Your available slots, e.g.\nTue 14 Oct 9am–12pm\nThu 16 Oct afternoon\nSat 18 Oct 8–11am"}
+        className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm" />
+      <input value={extra} onChange={(e) => setExtra(e.target.value)} placeholder="Anything else to mention? (optional)"
+        className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm" />
+      <div className="flex flex-wrap items-center gap-2">
+        {(["whatsapp", "email"] as const).map((c) => (
+          <button key={c} onClick={() => setChannel(c)}
+            className={`rounded-full border px-3 py-1 text-sm capitalize ${channel === c ? "border-primary bg-primary text-primary-foreground" : "border-border"}`}>
+            {c === "whatsapp" ? "WhatsApp" : "Email"}
+          </button>
+        ))}
+        <button onClick={generate} disabled={busy || availability.trim().length < 3}
+          className="ml-auto rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-accent-foreground disabled:opacity-50">
+          {busy ? "Drafting…" : draft ? "Redraft" : "Draft message"}
+        </button>
+      </div>
+      {err && <p className="text-sm text-destructive">{err}</p>}
+      {draft && (
+        <>
+          <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={8}
+            className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm" />
+          <div className="flex flex-wrap gap-2 text-sm">
+            <button onClick={async () => { await navigator.clipboard.writeText(draft); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+              className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5"><Copy className="h-4 w-4" />{copied ? "Copied" : "Copy"}</button>
+            <a href={`https://wa.me/${waNumber(phone)}?text=${encodeURIComponent(draft)}`} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-primary-foreground"><MessageCircle className="h-4 w-4" />Send on WhatsApp</a>
+            {email && (
+              <a href={`mailto:${email}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5"><Mail className="h-4 w-4" />Send by email</a>
+            )}
+          </div>
+        </>
+      )}
+      <button onClick={() => setOpen(false)} className="text-xs text-muted-foreground underline">Close</button>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -143,6 +223,7 @@ function AdminPage() {
                 )}
                 <span className="ml-auto self-center text-xs text-muted-foreground">Received {new Date(r.created_at).toLocaleString("en-GB")}</span>
               </div>
+              <DraftPanel id={r.id} phone={r.phone} email={r.email} name={r.name} />
             </div>
           );
         })}
