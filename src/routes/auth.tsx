@@ -1,0 +1,73 @@
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { BUSINESS } from "@/lib/site";
+
+export const Route = createFileRoute("/auth")({
+  head: () => ({
+    meta: [
+      { title: `Admin sign in — ${BUSINESS.name}` },
+      { name: "description", content: "Staff sign in to manage reservations." },
+      { property: "og:title", content: `Admin sign in — ${BUSINESS.name}` },
+      { property: "og:description", content: "Staff sign in to manage reservations." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
+  component: AuthPage,
+});
+
+function AuthPage() {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  async function onSubmit(e: FormEvent) {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    if (mode === "signin") {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      setBusy(false);
+      if (error) return setMsg(error.message);
+      navigate({ to: "/admin" });
+    } else {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/admin` },
+      });
+      setBusy(false);
+      if (error) return setMsg(error.message);
+      if (data.session) navigate({ to: "/admin" });
+      else setMsg("Check your email to confirm your account, then sign in.");
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-md px-4 py-16">
+      <h1 className="font-display text-3xl font-semibold">
+        {mode === "signin" ? "Admin sign in" : "Create admin account"}
+      </h1>
+      <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-2xl border border-border bg-card p-6">
+        <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+          className="w-full rounded-lg border border-input bg-background px-3 py-2" />
+        <input type="password" required minLength={6} placeholder="Password" value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full rounded-lg border border-input bg-background px-3 py-2" />
+        {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
+        <button disabled={busy} className="w-full rounded-full bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-60">
+          {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
+        </button>
+        <button type="button" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+          className="w-full text-sm text-muted-foreground underline">
+          {mode === "signin" ? "No account yet? Sign up" : "Already have an account? Sign in"}
+        </button>
+      </form>
+    </div>
+  );
+}
