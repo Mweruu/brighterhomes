@@ -51,7 +51,8 @@ function validateReservation(raw: unknown): ReservationInput {
 export const submitReservation = createServerFn({ method: "POST" })
   .inputValidator(validateReservation)
   .handler(async ({ data }) => {
-    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+    // const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+    const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     // const supabase = createClient(process.env["SUPABASE_URL"]!, key, {
     const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, key, {
       auth: { persistSession: false },
