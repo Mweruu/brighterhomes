@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { BUSINESS } from "@/lib/site";
 
 export const Route = createFileRoute("/auth")({
@@ -25,6 +26,13 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  // Signed-in users (including returning from Google) go straight to the dashboard.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/admin" }); });
+    const { data } = supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_IN") navigate({ to: "/admin" }); });
+    return () => data.subscription.unsubscribe();
+  }, [navigate]);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -62,6 +70,13 @@ function AuthPage() {
         {msg && <p className="text-sm text-muted-foreground">{msg}</p>}
         <button disabled={busy} className="w-full rounded-full bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-60">
           {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
+        </button>
+        <button type="button" onClick={async () => {
+            const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
+            if (res?.error) setMsg(res.error.message ?? "Google sign-in failed.");
+          }}
+          className="w-full rounded-full border border-border bg-background px-5 py-2.5 font-semibold">
+          Continue with Google
         </button>
         <button type="button" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           className="w-full text-sm text-muted-foreground underline">
