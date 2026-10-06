@@ -1,6 +1,23 @@
 import { Link } from "@tanstack/react-router";
-import { Phone, MessageCircle, CalendarCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Phone, MessageCircle, CalendarCheck, UserRound } from "lucide-react";
 import { BUSINESS, whatsappLink } from "@/lib/site";
+import { supabase } from "@/integrations/supabase/client";
+
+function AccountLink() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+    const { data } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => data.subscription.unsubscribe();
+  }, []);
+  return (
+    <Link to={signedIn ? "/admin" : "/auth"}
+      className="hidden h-9 items-center gap-1.5 px-2 text-sm font-medium text-foreground/80 hover:text-primary md:inline-flex">
+      <UserRound className="h-4 w-4" /> {signedIn ? "Dashboard" : "Sign in"}
+    </Link>
+  );
+}
 
 export function SiteHeader() {
   return (
@@ -31,6 +48,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <AccountLink />
           <a
             href={whatsappLink(`Hello ${BUSINESS.shortName}! I'd like to ask about your cleaning services.`)}
             target="_blank"
