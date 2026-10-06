@@ -27,6 +27,13 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
+  // Signed-in users (including returning from Google) go straight to the dashboard.
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/admin" }); });
+    const { data } = supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_IN") navigate({ to: "/admin" }); });
+    return () => data.subscription.unsubscribe();
+  }, [navigate]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
