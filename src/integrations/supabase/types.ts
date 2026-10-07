@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          address: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reservations: {
         Row: {
           created_at: string
@@ -27,6 +51,7 @@ export type Database = {
           property_size: string | null
           service_type: string
           status: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -40,6 +65,7 @@ export type Database = {
           property_size?: string | null
           service_type: string
           status?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -53,6 +79,7 @@ export type Database = {
           property_size?: string | null
           service_type?: string
           status?: string
+          user_id?: string | null
         }
         Relationships: []
       }
