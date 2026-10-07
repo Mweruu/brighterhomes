@@ -53,18 +53,32 @@ export const submitReservation = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const key: string = process.env["SUPABASE_PUBLISHABLE_KEY"] || import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
     const url: string = process.env["SUPABASE_URL"] || import.meta.env["VITE_SUPABASE_URL"];
+
+    // If the visitor is signed in, the bearer token is attached automatically.
+    // Validate it server-side and own the booking as that user (never trust client data).
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const authHeader = getRequest()?.headers.get("authorization") ?? "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    const userToken = token.split(".").length === 3 ? token : "";
+
     const supabase = createClient(url, key, {
-      auth: { persistSession: false },
-      // Opaque sb_ keys aren't JWTs; send only apikey, not a bearer header.
+      auth: { persistSession: false, autoRefreshToken: false },
       global: {
         fetch: (input, init) => {
           const h = new Headers(init?.headers);
-          if (h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+          if (userToken) h.set("Authorization", `Bearer ${userToken}`);
+          else if (h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
           h.set("apikey", key);
           return fetch(input, { ...init, headers: h });
         },
       },
     });
+
+    let userId: string | null = null;
+    if (userToken) {
+      const { data: claims } = await supabase.auth.getClaims(userToken);
+      userId = (claims?.claims?.sub as string | undefined) ?? null;
+    }
 
     const { error } = await supabase.from("reservations").insert({
       name: data.name,
@@ -75,6 +89,7 @@ export const submitReservation = createServerFn({ method: "POST" })
       preferred_date: data.preferredDate,
       preferred_time: data.preferredTime,
       notes: data.notes ?? null,
+      user_id: userId,
     });
 
     if (error) {

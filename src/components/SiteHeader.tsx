@@ -12,9 +12,9 @@ function AccountLink() {
     return () => data.subscription.unsubscribe();
   }, []);
   return (
-    <Link to={signedIn ? "/admin" : "/auth"}
+    <Link to={signedIn ? "/account" : "/auth"}
       className="hidden h-9 items-center gap-1.5 px-2 text-sm font-medium text-foreground/80 hover:text-primary md:inline-flex">
-      <UserRound className="h-4 w-4" /> {signedIn ? "Dashboard" : "Sign in"}
+      <UserRound className="h-4 w-4" /> {signedIn ? "My account" : "Sign in"}
     </Link>
   );
 }

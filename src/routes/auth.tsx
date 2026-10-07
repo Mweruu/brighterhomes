@@ -7,10 +7,10 @@ import { BUSINESS } from "@/lib/site";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: `Admin sign in — ${BUSINESS.name}` },
-      { name: "description", content: "Staff sign in to manage reservations." },
-      { property: "og:title", content: `Admin sign in — ${BUSINESS.name}` },
-      { property: "og:description", content: "Staff sign in to manage reservations." },
+      { title: `Sign in — ${BUSINESS.name}` },
+      { name: "description", content: "Sign in to view your bookings and details." },
+      { property: "og:title", content: `Sign in — ${BUSINESS.name}` },
+      { property: "og:description", content: "Sign in to view your bookings and details." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -29,8 +29,8 @@ function AuthPage() {
 
   // Signed-in users (including returning from Google) go straight to the dashboard.
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/admin" }); });
-    const { data } = supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_IN") navigate({ to: "/admin" }); });
+    supabase.auth.getUser().then(({ data }) => { if (data.user) navigate({ to: "/account" }); });
+    const { data } = supabase.auth.onAuthStateChange((event) => { if (event === "SIGNED_IN") navigate({ to: "/account" }); });
     return () => data.subscription.unsubscribe();
   }, [navigate]);
 
@@ -42,16 +42,16 @@ function AuthPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setBusy(false);
       if (error) return setMsg(error.message);
-      navigate({ to: "/admin" });
+      navigate({ to: "/account" });
     } else {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/admin` },
+        options: { emailRedirectTo: `${window.location.origin}/auth` },
       });
       setBusy(false);
       if (error) return setMsg(error.message);
-      if (data.session) navigate({ to: "/admin" });
+      if (data.session) navigate({ to: "/account" });
       else setMsg("Check your email to confirm your account, then sign in.");
     }
   }
@@ -59,7 +59,7 @@ function AuthPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="font-display text-3xl font-semibold">
-        {mode === "signin" ? "Admin sign in" : "Create admin account"}
+        {mode === "signin" ? "Sign in" : "Create your account"}
       </h1>
       <form onSubmit={onSubmit} className="mt-6 space-y-4 rounded-2xl border border-border bg-card p-6">
         <input type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
