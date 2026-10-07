@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as ServicesRouteImport } from './routes/services'
+import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const IndexRoute = IndexRouteImport.update({
@@ -40,6 +41,11 @@ const ServicesRoute = ServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/booking': typeof BookingRoute
   '/services': typeof ServicesRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRoutesByTo {
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/booking': typeof BookingRoute
   '/services': typeof ServicesRoute
+  '/account': typeof AuthenticatedAccountRoute
   '/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRoutesById {
@@ -67,13 +75,14 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/booking': typeof BookingRoute
   '/services': typeof ServicesRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/booking' | '/services' | '/admin'
+  fullPaths: '/' | '/auth' | '/booking' | '/services' | '/account' | '/admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/booking' | '/services' | '/admin'
+  to: '/' | '/auth' | '/booking' | '/services' | '/account' | '/admin'
   id:
     | '__root__'
     | '/'
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/booking'
     | '/services'
+    | '/_authenticated/account'
     | '/_authenticated/admin'
   fileRoutesById: FileRoutesById
 }
@@ -129,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/account': {
+      id: '/_authenticated/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -140,10 +157,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
 }
 
