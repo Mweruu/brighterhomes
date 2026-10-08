@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: `${BUSINESS.name} — Move-in deep cleaning, carpets & upholstery` },
       { name: "description", content: `${BUSINESS.tagline}. Reserve online, call, or WhatsApp us — ${BUSINESS.area}.` },
       { name: "author", content: BUSINESS.name },
-      { name: "theme-color", content: "#2f5e4a" },
+      { name: "theme-color", content: "#2563eb" },
       { name: "apple-mobile-web-app-title", content: BUSINESS.shortName },
       { name: "application-name", content: BUSINESS.shortName },
       { property: "og:site_name", content: BUSINESS.name },

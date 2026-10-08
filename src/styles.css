@@ -6,7 +6,7 @@
 
 /*
  * Design system — Brighter Homes Cleaning Co.
- * Warm ivory surfaces, deep pine green, citrus amber accents.
+ * Warm ivory surfaces, confident blue (#2563EB), citrus amber accents.
  * Fonts: Fraunces (display serif) + Work Sans (body), loaded in __root head.
  */
 
@@ -44,24 +44,24 @@
 :root {
   --radius: 0.75rem;
   --background: oklch(0.975 0.008 95);
-  --foreground: oklch(0.25 0.035 160);
+  --foreground: oklch(0.24 0.035 262);
   --card: oklch(0.995 0.004 95);
-  --card-foreground: oklch(0.25 0.035 160);
+  --card-foreground: oklch(0.24 0.035 262);
   --popover: oklch(0.995 0.004 95);
-  --popover-foreground: oklch(0.25 0.035 160);
-  --primary: oklch(0.38 0.075 158);
-  --primary-foreground: oklch(0.975 0.008 95);
-  --secondary: oklch(0.925 0.02 100);
-  --secondary-foreground: oklch(0.3 0.05 158);
-  --muted: oklch(0.935 0.015 100);
-  --muted-foreground: oklch(0.47 0.03 155);
+  --popover-foreground: oklch(0.24 0.035 262);
+  --primary: oklch(0.546 0.215 262.9);
+  --primary-foreground: oklch(0.99 0.003 260);
+  --secondary: oklch(0.94 0.025 255);
+  --secondary-foreground: oklch(0.38 0.14 263);
+  --muted: oklch(0.95 0.012 255);
+  --muted-foreground: oklch(0.48 0.03 260);
   --accent: oklch(0.82 0.135 78);
   --accent-foreground: oklch(0.28 0.05 70);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.984 0.003 95);
-  --border: oklch(0.89 0.018 100);
-  --input: oklch(0.86 0.02 100);
-  --ring: oklch(0.55 0.08 158);
+  --border: oklch(0.9 0.018 255);
+  --input: oklch(0.87 0.022 255);
+  --ring: oklch(0.62 0.18 262);
 }
 
 @layer base {
