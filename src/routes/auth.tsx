@@ -71,12 +71,19 @@ function AuthPage() {
         <button disabled={busy} className="w-full rounded-full bg-primary px-5 py-2.5 font-semibold text-primary-foreground disabled:opacity-60">
           {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}
         </button>
-        <button type="button" onClick={async () => {
+        {/* <button type="button" onClick={async () => {
             const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth" });
             if (res?.error) setMsg(res.error.message ?? "Google sign-in failed.");
           }}
           className="w-full rounded-full border border-border bg-background px-5 py-2.5 font-semibold">
           Continue with Google
+        </button> */}
+        <button type="button" onClick={async () => {
+            const res = await lovable.auth.signInWithOAuth("google");
+            if (res?.error) { setMsg(res.error.message ?? "Google sign-in failed.");
+          } }}
+          className="w-full rounded-full border border-border bg-background px-5 py-2.5 font-semibold" > 
+          Continue with Google 
         </button>
         <button type="button" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
           className="w-full text-sm text-muted-foreground underline">
